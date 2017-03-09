@@ -13,7 +13,9 @@ value: selectedCategory"></select></div>
     <ul>
         <!-- ko foreach: filteredByCategory-->
         <li data-bind="text: name,
-        event: {click: $parent.processClickOnListItem }">
+        css: $parent.profitStatus,
+        event: {click: $parent.processClickOnListItem }
+        ">
 
         </li>
         <!-- /ko -->
@@ -66,41 +68,34 @@ value: selectedCategory"></select></div>
                 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
             }
 
-            //    me.markers.push(marker);
-
-//            var markerInfo = {
-//                "marker": marker,
-//                "type": locations[i].type,
-//                "yelpID": locations[i].yelpID
-//            };
-
             locations[i].marker = marker;
 
-//      var num = markerInfo;
 
             marker.addListener('click', (function (location) {
 
                 return function () {
-                    console.log("this is ", this);
+                    highlightListItem(location);
                     populateInfoWindow(this, largeInfoWindow, location);
-
-                    // open the list
-                    // TODO: highlight the corresponding list item
-                    // document.getElementById('left-nav').click();
-                    console.log("clicked on marker");
                 };
             })(locations[i]));
 
         }
     }
 
-    function populateInfoWindow(currentMarker, infowindow, place) {
+    function highlightListItem(location) {
+        // look up the location
 
+        console.log("**************location is ", location);
+
+        ViewModel.currentProfit = -50;
+
+    }
+
+    function populateInfoWindow(currentMarker, infowindow, place) {
 
         var marker = place.marker;
 
         console.log("Populate Info Window: marker = ", marker);
-
 
         // Check to make sure the info window is not already opened on this marker
         if (infowindow.marker != marker) {
@@ -113,7 +108,7 @@ value: selectedCategory"></select></div>
             console.log('rating = ', rating);
 
             var imgTag = '',
-                 yelpLink = '';
+                    yelpLink = '';
             if (rating)
                 imgTag = "<img src = ' " + rating + "' alt='Yelp Rating'/>";
             if (yelpUrl)
@@ -132,23 +127,19 @@ value: selectedCategory"></select></div>
         }
     }
 
-    function filterMapByCategory() {
 
-        console.log("category is ", category);
+    function filterMap(places, filtered) {
 
-        //me.clearInfoWindow();
-
+        console.log("places = ", places);
         for (var i = 0; i < places.length; i++) {
-            // This will hide the markers, not delete them
+            places[i].marker.setMap(null);
+        }
 
-            if (places[i].type === category) {
-                places[i].marker.setMap(me.map);
-            } else {
-                places[i].marker.setMap(null);
-            }
+        console.log("filtered = ", filtered);
+        for (var i = 0; i < filtered.length; i++) {
+            filtered[i].marker.setMap(map);
         }
     }
-
 
 </script>
 <script src="place.js"></script>
@@ -159,43 +150,31 @@ value: selectedCategory"></select></div>
     initMap();
 
     places.push(
-      new app.Place ( {
-          "category": "Attraction",
-          "name": "Madison Children's Museum",
-          "location": {
-              "lat": 43.076674,
-              "lng": -89.384438
-          },
-          "yelpId": "madison-childrens-museum-madison"
-      }));
+            new app.Place({
+                "category": "Attraction",
+                "name": "Madison Children's Museum",
+                "location": {
+                    "lat": 43.076674,
+                    "lng": -89.384438
+                },
+                "yelpId": "madison-childrens-museum-madison"
+            }));
 
     places.push(
-      new app.Place( {
-          "category": "Food",
-          "name": "Paisan's Restaurant",
-          "location": {
-              "lat": 43.070682,
-              "lng": -89.383026
-          },
-          "yelpId": "paisans-madison"
-      }));
-
-
-    // do map
-    // init markers
+            new app.Place({
+                "category": "Food",
+                "name": "Paisan's Restaurant",
+                "location": {
+                    "lat": 43.070682,
+                    "lng": -89.383026
+                },
+                "yelpId": "paisans-madison"
+            }));
 
     initMarkers(places);
 
-
-
-
-    // then list
-
     // bind a new instance of our view model to the page
     ko.applyBindings(new ViewModel(places || []));
-
-
-
 
 
 </script>
