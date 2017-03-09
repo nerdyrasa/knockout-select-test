@@ -9,5 +9,7 @@ app.Place = function (place) {
   this.marker = place.marker || undefined;
   this.yelpRating = place.yelpRating || '';
   this.yelpUrl = place.yelpUrl || '';
+  this.activeItem = ko.observable(false);
 
 };
+

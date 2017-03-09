@@ -13,7 +13,7 @@ value: selectedCategory"></select></div>
     <ul>
         <!-- ko foreach: filteredByCategory-->
         <li data-bind="text: name,
-        css: $parent.profitStatus,
+        css: { activeItemHighlight: activeItem === true },
         event: {click: $parent.processClickOnListItem }
         ">
 
@@ -85,9 +85,8 @@ value: selectedCategory"></select></div>
     function highlightListItem(location) {
         // look up the location
 
+        location.activeItem = true;
         console.log("**************location is ", location);
-
-        ViewModel.currentProfit = -50;
 
     }
 
