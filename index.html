@@ -77,7 +77,7 @@ value: selectedCategory"></select></div>
                     for ( var i=0; i < locations.length; i++ ) {
                         locations[i].activeItem(false);
                     }
-                    highlightListItem(location);
+                    location.activeItem(true);
                     populateInfoWindow(this, largeInfoWindow, location);
                 };
             })(locations[i]));
@@ -85,19 +85,10 @@ value: selectedCategory"></select></div>
         }
     }
 
-    function highlightListItem(location) {
-        // look up the location
-
-        location.activeItem(true);
-        console.log("**************location is ", location);
-
-    }
 
     function populateInfoWindow(currentMarker, infowindow, place) {
 
         var marker = place.marker;
-
-        console.log("Populate Info Window: marker = ", marker);
 
         // Check to make sure the info window is not already opened on this marker
         if (infowindow.marker != marker) {

@@ -13,7 +13,10 @@ var ViewModel = function (places) {
   };
   self.filteredByCategory = ko.computed(function () {
 
+    console.log("filter");
+
     if (largeInfoWindow) {
+      console.log("reset large info window");
       largeInfoWindow.setMarker = null;
       largeInfoWindow.marker = null;
     }
