@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<div><select name="category" id="category" data-bind="options: categories,
+optionsCaption: 'All',
+value: selectedCategory"></select></div>
+<div>
+    <ul>
+        <!-- ko foreach: filteredByCategory-->
+        <li data-bind="text: name,
+        event: {click: $parent.processClickOnListItem }">
+
+        </li>
+        <!-- /ko -->
+    </ul>
+</div>
+<div id="map-canvas"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
+<script src="viewmodel.js"></script>
+
+<script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwPVLHkMHn3e7BX0MzQHLki_efPdTX35c&v=3">
+</script>
+<script>
+
+    var largeInfoWindow = undefined;
+    var map = undefined;
+
+    function initMap() {
+
+        console.log("Initializing map....");
+        var madisonCenter = {lat: 43.069352, lng: -89.396601};
+
+        map = new google.maps.Map(document.getElementById('map-canvas'), {
+            zoom: 14,
+            center: madisonCenter
+        });
+    }
+
+    function initMarkers(locations) {
+
+        //var locations = app.placeViewModel.places();
+
+        largeInfoWindow = new google.maps.InfoWindow();
+
+        var bounds = new google.maps.LatLngBounds();
+
+        for (var i = 0; i < locations.length; i++) {
+            var position = locations[i].location;
+            var title = locations[i].name;
+            var marker = new google.maps.Marker({
+                map: map,
+                position: position,
+                title: title,
+                animation: google.maps.Animation.DROP,
+                id: i
+            });
+            if (locations[i].category === "Attraction") {
+                marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+            } else {
+                marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
+            }
+
+            //    me.markers.push(marker);
+
+//            var markerInfo = {
+//                "marker": marker,
+//                "type": locations[i].type,
+//                "yelpID": locations[i].yelpID
+//            };
+
+            locations[i].marker = marker;
+
+//      var num = markerInfo;
+
+            marker.addListener('click', (function (location) {
+
+                return function () {
+                    console.log("this is ", this);
+                    populateInfoWindow(this, largeInfoWindow, location);
+
+                    // open the list
+                    // TODO: highlight the corresponding list item
+                    // document.getElementById('left-nav').click();
+                    console.log("clicked on marker");
+                };
+            })(locations[i]));
+
+        }
+    }
+
+    function populateInfoWindow(currentMarker, infowindow, place) {
+
+
+        var marker = place.marker;
+
+        console.log("Populate Info Window: marker = ", marker);
+
+
+        // Check to make sure the info window is not already opened on this marker
+        if (infowindow.marker != marker) {
+            infowindow.marker = marker;
+            // look up the yelp rating if available
+
+            var rating = place.rating;
+            var yelpUrl = place.url;
+
+            console.log('rating = ', rating);
+
+            var imgTag = '',
+                 yelpLink = '';
+            if (rating)
+                imgTag = "<img src = ' " + rating + "' alt='Yelp Rating'/>";
+            if (yelpUrl)
+                yelpLink = "<a href='" + yelpUrl + "' target='_blank'><i class='fa fa-yelp'></i>Yelp Reviews</a>";
+
+            infowindow.setContent("<div><h1>" + place.name + "</h1><p>" + place.category + "</p>" + imgTag + "<span class='yelp-link'>" + yelpLink + "</span></div>");
+
+
+            infowindow.open(map, marker);
+            // make sure the marker property is cleared if the infowindow is closed
+            infowindow.addListener('closeclick', function () {
+                //infoWindow.setMap(null);
+                infowindow.setMarker = null;
+                infowindow.marker = null;
+            })
+        }
+    }
+
+    function filterMapByCategory() {
+
+        console.log("category is ", category);
+
+        //me.clearInfoWindow();
+
+        for (var i = 0; i < places.length; i++) {
+            // This will hide the markers, not delete them
+
+            if (places[i].type === category) {
+                places[i].marker.setMap(me.map);
+            } else {
+                places[i].marker.setMap(null);
+            }
+        }
+    }
+
+
+</script>
+<script src="place.js"></script>
+<script>
+    var places = [],
+            map = undefined;
+
+    initMap();
+
+    places.push(
+      new app.Place ( {
+          "category": "Attraction",
+          "name": "Madison Children's Museum",
+          "location": {
+              "lat": 43.076674,
+              "lng": -89.384438
+          },
+          "yelpId": "madison-childrens-museum-madison"
+      }));
+
+    places.push(
+      new app.Place( {
+          "category": "Food",
+          "name": "Paisan's Restaurant",
+          "location": {
+              "lat": 43.070682,
+              "lng": -89.383026
+          },
+          "yelpId": "paisans-madison"
+      }));
+
+
+    // do map
+    // init markers
+
+    initMarkers(places);
+
+
+
+
+    // then list
+
+    // bind a new instance of our view model to the page
+    ko.applyBindings(new ViewModel(places || []));
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
