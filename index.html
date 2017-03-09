@@ -13,7 +13,7 @@ value: selectedCategory"></select></div>
     <ul>
         <!-- ko foreach: filteredByCategory-->
         <li data-bind="text: name,
-        css: { activeItemHighlight: activeItem === true },
+        css: { activeItemHighlight: activeItem  },
         event: {click: $parent.processClickOnListItem }
         ">
 
@@ -74,6 +74,9 @@ value: selectedCategory"></select></div>
             marker.addListener('click', (function (location) {
 
                 return function () {
+                    for ( var i=0; i < locations.length; i++ ) {
+                        locations[i].activeItem(false);
+                    }
                     highlightListItem(location);
                     populateInfoWindow(this, largeInfoWindow, location);
                 };
@@ -85,7 +88,7 @@ value: selectedCategory"></select></div>
     function highlightListItem(location) {
         // look up the location
 
-        location.activeItem = true;
+        location.activeItem(true);
         console.log("**************location is ", location);
 
     }
@@ -122,10 +125,11 @@ value: selectedCategory"></select></div>
                 //infoWindow.setMap(null);
                 infowindow.setMarker = null;
                 infowindow.marker = null;
+                console.log("Place is ", place);
+                place.activeItem(false);
             })
         }
     }
-
 
     function filterMap(places, filtered) {
 
@@ -171,6 +175,8 @@ value: selectedCategory"></select></div>
             }));
 
     initMarkers(places);
+
+
 
     // bind a new instance of our view model to the page
     ko.applyBindings(new ViewModel(places || []));

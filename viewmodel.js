@@ -37,4 +37,7 @@ var ViewModel = function (places) {
     return results;
 
   }, self);
+
+  console.log("Places are ", self.places);
+
 }

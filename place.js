@@ -1,7 +1,6 @@
 var app = window.app || {};
 app.Place = function (place) {
   'use strict';
-
   this.category = place.category || 'No category';
   this.name = place.name || '';
   this.location = place.location || undefined;
@@ -10,6 +9,5 @@ app.Place = function (place) {
   this.yelpRating = place.yelpRating || '';
   this.yelpUrl = place.yelpUrl || '';
   this.activeItem = ko.observable(false);
-
 };
 
