@@ -2,11 +2,14 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>Knockout Select List and Map</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-<div><select name="category" id="category" data-bind="options: categories,
+<div class="select">
+    <span class="arr"></span>
+    <select name="category" id="category" data-bind="options: categories,
 optionsCaption: 'All',
 value: selectedCategory"></select></div>
 <div>
@@ -21,7 +24,7 @@ value: selectedCategory"></select></div>
         <!-- /ko -->
     </ul>
 </div>
-<div id="map-canvas"></div>
+<div id="map"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
 <script src="viewmodel.js"></script>
 
@@ -38,7 +41,7 @@ value: selectedCategory"></select></div>
         console.log("Initializing map....");
         var madisonCenter = {lat: 43.069352, lng: -89.396601};
 
-        map = new google.maps.Map(document.getElementById('map-canvas'), {
+        map = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
             center: madisonCenter
         });
@@ -74,6 +77,8 @@ value: selectedCategory"></select></div>
             marker.addListener('click', (function (location) {
 
                 return function () {
+
+
                     for ( var i=0; i < locations.length; i++ ) {
                         locations[i].activeItem(false);
                     }
@@ -83,6 +88,16 @@ value: selectedCategory"></select></div>
             })(locations[i]));
 
         }
+    }
+
+    function attachSecretMessage(marker, secretMessage) {
+        var infowindow = new google.maps.InfoWindow({
+            content: secretMessage
+        });
+
+        marker.addListener('click', function() {
+            infowindow.open(marker.get('map'), marker);
+        });
     }
 
 
@@ -116,7 +131,7 @@ value: selectedCategory"></select></div>
                 //infoWindow.setMap(null);
                 infowindow.setMarker = null;
                 infowindow.marker = null;
-                console.log("Place is ", place);
+                console.log("Did a closeclick here", place);
                 place.activeItem(false);
             })
         }
@@ -138,32 +153,52 @@ value: selectedCategory"></select></div>
 </script>
 <script src="place.js"></script>
 <script>
-    var places = [],
+    var places = [
+                new Place({
+                    "category": "Attraction",
+                    "name": "Madison Children's Museum",
+                    "location": {
+                        "lat": 43.076674,
+                        "lng": -89.384438
+                    },
+                    "yelpId": "madison-childrens-museum-madison"
+                }),
+                new Place({
+                    "category": "Food",
+                    "name": "Paisan's Restaurant",
+                    "location": {
+                        "lat": 43.070682,
+                        "lng": -89.383026
+                    },
+                    "yelpId": "paisans-madison"
+                })
+
+            ],
             map = undefined;
 
     initMap();
 
-    places.push(
-            new app.Place({
-                "category": "Attraction",
-                "name": "Madison Children's Museum",
-                "location": {
-                    "lat": 43.076674,
-                    "lng": -89.384438
-                },
-                "yelpId": "madison-childrens-museum-madison"
-            }));
-
-    places.push(
-            new app.Place({
-                "category": "Food",
-                "name": "Paisan's Restaurant",
-                "location": {
-                    "lat": 43.070682,
-                    "lng": -89.383026
-                },
-                "yelpId": "paisans-madison"
-            }));
+//    places.push(
+//            new app.Place({
+//                "category": "Attraction",
+//                "name": "Madison Children's Museum",
+//                "location": {
+//                    "lat": 43.076674,
+//                    "lng": -89.384438
+//                },
+//                "yelpId": "madison-childrens-museum-madison"
+//            }));
+//
+//    places.push(
+//            new app.Place({
+//                "category": "Food",
+//                "name": "Paisan's Restaurant",
+//                "location": {
+//                    "lat": 43.070682,
+//                    "lng": -89.383026
+//                },
+//                "yelpId": "paisans-madison"
+//            }));
 
     initMarkers(places);
 

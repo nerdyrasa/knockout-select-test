@@ -1,5 +1,5 @@
-var app = window.app || {};
-app.Place = function (place) {
+// Constructor function for a Place
+var Place = function (place) {
   'use strict';
   this.category = place.category || 'No category';
   this.name = place.name || '';

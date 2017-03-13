@@ -1,39 +1,49 @@
-//  view model
+//  The view model consists of the list of places as well as the map and the maps corresponding
+//  markers.
+
 var ViewModel = function (places) {
+
   var self = this;
+
   self.places = places;
+
   self.selectedCategory = ko.observable();
+
   self.categories = ["Food", "Attraction"];
+
   self.processClickOnListItem = function () {
-    console.log("clicked list item");
-    console.log("this is ", this);
     var place = this;
+
+    // Go through and deselect any other items that may have been previously selected
+    for ( var i=0; i < self.places.length; i++ ) {
+      self.places[i].activeItem(false);
+    }
+
+    // Set the selected item as the active item
+    this.activeItem(true);
+
+    // Show the corresponding info window on the map
     populateInfoWindow(place.marker, largeInfoWindow, place);
 
   };
+
   self.filteredByCategory = ko.computed(function () {
 
-    console.log("filter");
-
+    // If the info window is open when a filter is selected, close the window.
     if (largeInfoWindow) {
-      console.log("reset large info window");
-      largeInfoWindow.setMarker = null;
-      largeInfoWindow.marker = null;
+      largeInfoWindow.close(map, largeInfoWindow.marker);
     }
 
     var results = this.places;
     var filterCategory = this.selectedCategory();
 
     if (filterCategory) {
-
       results = ko.utils.arrayFilter(results, function (place) {
-        //console.log("category = , filter category = " + place.category  + " " + filterCategory);
-        console.dir(place);
-
         return place.category === filterCategory;
       });
     }
 
+    // Show only the map markers that correspond to the selected category.
     if (results) {
       filterMap(this.places, results);
     }
@@ -41,6 +51,5 @@ var ViewModel = function (places) {
 
   }, self);
 
-  console.log("Places are ", self.places);
 
 }
